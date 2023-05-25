@@ -13,7 +13,7 @@ class OrderPageScooter:
     def order_page(self):
         self.driver.get('https://qa-scooter.praktikum-services.ru/order')
 
-    def wait_for_order_page(self):
+    def wait_for_order(self):
         WebDriverWait(self.driver, 3).until(expected_conditions.url_to_be('https://qa-scooter.praktikum-services.ru/order'))
 
 
@@ -52,8 +52,8 @@ class OrderPageScooter:
         self.set_phone_number(number)
         self.click_button_forward()
 
-    def wait_for_form_two(self):
-        WebDriverWait(self.driver, 3).until(expected_conditions.visibility_of_element_located(OrderPageLocators.FORM_TWO))
+    def wait_for_form(self, form):
+        WebDriverWait(self.driver, 3).until(expected_conditions.visibility_of_element_located(form))
 
     def set_date(self, date):
         self.driver.find_element(*OrderPageLocators.FIELD_CALENDAR).send_keys(date)
@@ -88,20 +88,11 @@ class OrderPageScooter:
         self.set_comment(comment)
         self.click_button_order()
 
-    @allure.step('Заполнить поля в форме "Про аренду"')
-    def filling_form_about_rent_two_flow(self, date, comment): #заполнение формы Про аренду 2
-        self.set_date(date)
-        self.select_rental_period(OrderPageLocators.RENTAL_PERIOD_SEVEN_DAYS)
-        self.click_checkbox_black()
-        self.set_comment(comment)
-        self.click_button_order()
-
-    def wait_for_form_three(self):
-        WebDriverWait(self.driver, 3).until(expected_conditions.visibility_of_element_located(OrderPageLocators.FORM_THREE))
-
     @allure.step('Нажать на кнопку "Да"')
     def click_confirmation_order(self):
         self.driver.find_element(*OrderPageLocators.BUTTON_CONFIRMATION_ORDER).click()
+        #self.click_to_element(*OrderPageLocators.BUTTON_CONFIRMATION_ORDER)
+
 
     def wait_for_window_order_is_placed(self):
         WebDriverWait(self.driver, 3).until(expected_conditions.visibility_of_element_located(OrderPageLocators.WINDOW_ORDER_IS_PLACED))

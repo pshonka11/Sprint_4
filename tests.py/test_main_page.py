@@ -1,42 +1,33 @@
 import allure
 import pytest
+from pages.base_page_pages import BasePageScooter
 from pages.main_page_pages import MainPageScooter
-from pages.order_page_pages import OrderPageScooter
-
-@pytest.mark.usefixtures("driver")
+from locators.main_page_locators import MainPageLocators
 
 
-class TestLogoScooter:
+class TestQuestionsSections:
+
+    sections_test_data = [
+        (1, "Сутки — 400 рублей. Оплата курьеру — наличными или картой."),
+        (2, "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."),
+        (3, "Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30."),
+        (4, "Только начиная с завтрашнего дня. Но скоро станем расторопнее."),
+        (5, "Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010."),
+        (6, "Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится."),
+        (7, "Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои."),
+        (8, "Да, обязательно. Всем самокатов! И Москве, и Московской области.")
+    ]
+
+
     @allure.title(
-        'Проверка перехода по логотипу "Самокат"')
+        'Проверка выпадающего списка в разделе "Вопросы о важном"')
     @allure.description(
-        'На странице заказа нажать на логотип "Самокат" и проверить, что перейдет на главную страницу')
-
-
-    def test_main_page_transition_logo_scooter(self, driver):
-        open_order_page = OrderPageScooter(driver)
-        open_order_page.order_page()
-        transition_logo_scooter = MainPageScooter(driver)
-        transition_logo_scooter.click_logo_scooter()
-        transition_logo_scooter.wait_for_logo_scooter()
-        url_logo_scooter = driver.current_url
-        assert url_logo_scooter == 'https://qa-scooter.praktikum-services.ru/'
-
-
-@pytest.mark.usefixtures("driver")
-class TestLogoYandex:
-    @allure.title(
-        'Проверка перехода по логотипу "Яндекс"')
-    @allure.description(
-        'На странице заказа нажать на логотип "Яндекс" и проверить, что в новом окне откроется главная страница Яндекса')
-
-
-    def test_main_page_transition_logo_yandex(self, driver):
-        open_order_page = OrderPageScooter(driver)
-        open_order_page.order_page()
-        transition_logo_yandex = MainPageScooter(driver)
-        transition_logo_yandex.click_logo_yandex()
-        transition_logo_yandex.wait_for_new_tab_is_opened()
-        driver.switch_to.window(driver.window_handles[1])
-        transition_logo_yandex.wait_until_page_is_loaded()
-        assert driver.current_url == 'https://dzen.ru/?yredirect=true'
+        'На главной странице найти раздел, нажать на вопросы и проверить текст ответов')
+    @pytest.mark.parametrize("num,text", sections_test_data)
+    def test_get_answer(self, driver, num, text):
+        question_section = MainPageScooter(driver)
+        question_section.main_page()
+        question_section.scroll_to_questions_section()
+        question_section.click_question_button(num)
+        current_answer = question_section.get_current_answer_text()
+        assert current_answer == text

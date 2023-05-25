@@ -9,23 +9,43 @@ class MainPageScooter:
     def __init__(self, driver):
         self.driver = driver
 
+    @allure.step('Открыть страницу https://qa-scooter.praktikum-services.ru')
+    def main_page(self):
+        self.driver.get('https://qa-scooter.praktikum-services.ru')
+
+    def wait_for_main_page(self):
+        WebDriverWait(self.driver, 10).until(expected_conditions.url_to_be('https://qa-scooter.praktikum-services.ru'))
+
+    def click_cookie_button(self):
+        self.driver.find_element(*MainPageLocators.BUTTON_COOKIE).click()
+
+    @allure.step('Перейти к разделу "Вопросы о важном"')
+    def get_questions(self):
+        return self.driver.find_elements(*MainPageLocators.QUESTIONS)
+
+    def scroll_to_questions_section(self):
+        section = self.driver.find_element(*MainPageLocators.QUESTIONS_SECTION)
+        self.driver.execute_script("arguments[0].scrollIntoView();", section)
+        WebDriverWait(self.driver, 10).until(
+            expected_conditions.visibility_of_element_located(MainPageLocators.QUESTIONS_SECTION))
+
+    @allure.step('Нажать на вопрос')
+    def click_question_button(self, num):
+        questions = self.get_questions()
+        questions[num - 1].click()
+
+    @allure.step('Получить текст ответа')
+    def get_current_answer_text(self):
+        WebDriverWait(self.driver, 20).until(
+            expected_conditions.visibility_of_element_located(MainPageLocators.CURRENT_ANSWER))
+        return self.driver.find_element(*MainPageLocators.CURRENT_ANSWER).text
+
+    @allure.step('Перейти к кнопке "Заказать"')
+    def scroll_button_order(self):
+        button = self.driver.find_element(*MainPageLocators.BUTTON_ORDER)
+        self.driver.execute_script("arguments[0].scrollIntoView();", button)
+        WebDriverWait(self.driver, 3).until(expected_conditions.visibility_of_element_located(MainPageLocators.BUTTON_ORDER))
+
     @allure.step('Нажать на кнопку "Заказать"')
-    def click_button_order_header(self):
-        self.driver.find_element(*MainPageLocators.BUTTON_ORDER_HEADER).click()
-
-    @allure.step('Нажать на логотип "Самокат"')
-    def click_logo_scooter(self):
-        self.driver.find_element(*MainPageLocators.LOGO_SCOOTER).click()
-
-    def wait_for_logo_scooter(self):
-        WebDriverWait(self.driver, 3).until(expected_conditions.url_to_be('https://qa-scooter.praktikum-services.ru/'))
-
-    @allure.step('Нажать на логотип "Яндекс"')
-    def click_logo_yandex(self):
-        self.driver.find_element(*MainPageLocators.LOGO_YANDEX).click()
-
-    def wait_for_new_tab_is_opened(self):
-        WebDriverWait(self.driver, 3).until(expected_conditions.number_of_windows_to_be(2))
-
-    def wait_until_page_is_loaded(self):
-        WebDriverWait(self.driver, 7).until(expected_conditions.url_to_be('https://dzen.ru/?yredirect=true'))
+    def click_button_order(self):
+        self.driver.find_element(*MainPageLocators.BUTTON_ORDER).click()
